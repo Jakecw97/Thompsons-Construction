@@ -13,45 +13,37 @@ def shunt(infix):
     #OperatorStack
     stack =""
     #Output
-    pofix =""
+    postfix =""
 
     for c in infix:
         #Add ( to the stack
-        if c =='(':
-            stack = stack + c
-           
-        elif c==')':
+        if c == '(':
+            stack = stack + c 
+        elif c == ')':
             #Pushes to the end of the stack
             while stack[-1] != '(':
-                #Add operators to the post fix
-                pofix = pofix + stack[-1]
-                #Removes operator from the stack
-                stack = stack[:-1]
-                #Repeat to remove '(' from the stack
-                stack = stack[:-1]
-
+                #Add operators to the post fix and Removes operator from the stack
+                postfix, stack = postfix + stack[-1], stack[:-1]
+            #Repeat to remove '(' from the stack
+            stack = stack[:-1]
         elif c in specialChars:
             #While the stack is not empty push operator from top of the stack which has a greater precedence
-            while stack and specialChars.get(c, 0) <= specials.get(stack[-1], 0):
-                 pofix, stack = pofix + stack[-1], stack[:-1]
+            while stack and specialChars.get(c, 0) <= specialChars.get(stack[-1], 0):
+                 postfix, stack = postfix + stack[-1], stack[:-1]
             stack = stack + c
-
         #Pushes reg characters to our output
         else:
-            pofix = pofix + c
-
+            postfix = postfix + c
         #Push remainder of the stack to the end of the post fix
-        while stack:
-            #Add operators to the post fix and remove '(' from the stack
-            pofix,stack = pofix + stack[-1],stack[:-1]
- 
-
-    return pofix
+    while stack:
+        #Add operators to the post fix and remove '(' from the stack
+        postfix,stack = postfix + stack[-1],stack[:-1]
+    return postfix
 
 #Thompsons Construction
 
 class state:
-    label, edge1, edge2 = None, None, None,
+    label, edge1, edge2 = None, None, None
     
 
 #NFA will only ever have initial and accept state
@@ -62,10 +54,10 @@ class nfa:
         self.initial, self.accept = initial, accept
 
 #compiles the post fix regular expression into a Non Finite Automata
-def compile(pofix):
+def compile(postfix):
     nfaStack = []
 
-    for c in pofix:
+    for c in postfix:
         
         #Concatinate
         if c =='.':
@@ -96,19 +88,17 @@ def compile(pofix):
             initial.edge2, nfa1.accept.edge2 = accept, accept
             #Push the new formed NFA back to the stack
             nfaStack.append(nfa(initial, accept))  
-
         elif c == '+':
             #pop single NFA from stack
             nfa1 = nfaStack.pop()
             #create initial and accept states
             accept, initial = state(), state()
-             #join initial to nfa1 initial state
+            #join initial to nfa1 initial state
             initial.edge1, nfa1.accept.edge1 = nfa1.initial, nfa1.initial
             #join accept state to nfa accept state
-            nfa1.accept.edge2 = accept
+            initial.edge2, nfa1.accept.edge2 = accept, accept
             #Push the new formed NFA back to the stack
-            nfaStack.append(nfa(initial, accept))
-        
+            nfaStack.append(nfa(initial, accept))  
         else:
         #new instance of accept and initial states
             accept, initial = state(), state()
@@ -146,7 +136,7 @@ def match(infix, string):
     nextState = set()
 
     #Join the initial state and current state
-    current |= checker(nfa.initial)
+    currentState |= checker(nfa.initial)
 
     #Loop through the string
     for s in string:
@@ -162,8 +152,8 @@ def match(infix, string):
     return (nfa.accept in currentState)
 
 #Test lines
-infixes = ["a.b.c", "a.(b|d).c*", "(a.(b|d))*", "a.(b.b).c"]
-string =  ["", "abc", "abbc", "abcc", "abad", "abbbc"]
+infixes = ["a.b.c", "a.(b|d).c*", "(a.(b|d))*", "a.(b.b).c", "a.(b.b).c+a.b|c", "d+a+b"]
+string =  ["", "abc", "abbc", "abcc", "abad", "abbbc","abbcabc","dab"]
 #Tests
 for i in infixes:
     for s in string:
