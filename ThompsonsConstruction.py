@@ -33,15 +33,15 @@ def shunt(infix):
         elif c in specialChars:
             #While the stack is not empty push operator from top of the stack which has a greater precedence
             while stack and specialChars.get(c, 0) <= specials.get(stack[-1], 0):
-                 profix, stack = profix + stack[-1], stack[:-1]
+                 pofix, stack = pofix + stack[-1], stack[:-1]
             stack = stack + c
 
         #Pushes reg characters to our output
         else:
-            profix = profix + c
+            pofix = pofix + c
 
         #Push remainder of the stack to the end of the post fix
-        while stack
+        while stack:
             #Add operators to the post fix and remove '(' from the stack
             pofix,stack = pofix + stack[-1],stack[:-1]
  
@@ -111,11 +111,60 @@ def compile(pofix):
         
         else:
         #new instance of accept and initial states
-        accept, initial = state(), state()
+            accept, initial = state(), state()
         #join the initial state to the accept, using C
-        initial.label, initial.edge1 = c, accept
+            initial.label, initial.edge1 = c, accept
         #Push the new formed NFA back to the stack
-        nfaStack.append(nfa(initial, accept))
+            nfaStack.append(nfa(initial, accept))
 
-
+    #Should only return a single NFA
     return nfaStack.pop()
+    
+    #Check if state has arrows and are labeled
+def checker(state):
+#Create new set with state as the only variable
+    states = set()
+    states.add(state)
+
+    #Check if state has an arrow(s) labelled E
+    if state.label is None:
+        #Check state
+        if state.edge1 is not None:
+            states |= checker(state.edge1)
+            #Check state
+        if state.edge2 is not None:
+            states |= checker(state.edge2)
+    return states
+
+def match(infix, string):
+#Apply shunting algorithm and compiles NFA
+    postfix = shunt(infix)
+    nfa = compile(postfix)
+
+    #Set curruent and next set of the states
+    currentState = set()
+    nextState = set()
+
+    #Join the initial state and current state
+    current |= checker(nfa.initial)
+
+    #Loop through the string
+    for s in string:
+        #Loop through the current states
+        for c in currentState:
+            # Check for any state that has the label S
+            if c.label == s:
+                #Join edge1 state to the next state
+                nextState |= checker(c.edge1)
+        #Set current to next and then wipe next
+        currentState = nextState
+        nextState = set()
+    return (nfa.accept in currentState)
+
+#Test lines
+infixes = ["a.b.c", "a.(b|d).c*", "(a.(b|d))*", "a.(b.b).c"]
+string =  ["", "abc", "abbc", "abcc", "abad", "abbbc"]
+#Tests
+for i in infixes:
+    for s in string:
+        print(match(i, s), i, s)
