@@ -83,9 +83,11 @@ def compile(postfix):
             #create initial and accept states
             accept, initial = state(), state()
             #join initial to nfa1 initial state
-            initial.edge1, nfa1.accept.edge1 = nfa1.initial, nfa1.initial
+            initial.edge1 = nfa1.initial
+            initial.edge2 = accept
             #join accept state to nfa accept state
-            initial.edge2, nfa1.accept.edge2 = accept, accept
+            nfa1.accept.edge1 = nfa1.initial
+            nfa1.accept.edge2 = accept
             #Push the new formed NFA back to the stack
             nfaStack.append(nfa(initial, accept))  
         elif c == '+':
@@ -94,9 +96,9 @@ def compile(postfix):
             #create initial and accept states
             accept, initial = state(), state()
             #join initial to nfa1 initial state
-            initial.edge1, nfa1.accept.edge1 = nfa1.initial, nfa1.initial
+            initial.edge1 = nfa1.initial
             #join accept state to nfa accept state
-            initial.edge2, nfa1.accept.edge2 = accept, accept
+            nfa1.accept.edge1, nfa1.accept.edge2 = nfa1.initial, accept
             #Push the new formed NFA back to the stack
             nfaStack.append(nfa(initial, accept))  
         else:
@@ -127,7 +129,7 @@ def checker(state):
     return states
 
 def match(infix, string):
-#Apply shunting algorithm and compiles NFA
+    #Apply shunting algorithm and compiles NFA
     postfix = shunt(infix)
     nfa = compile(postfix)
 
