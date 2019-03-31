@@ -4,9 +4,9 @@ Graph Theory Project 2019 -- Jake Warren -- G00349377
 A program to parse Regular Expressions into Non Finite Automata and also checks the NFA to see if it matches a String.
 --------------------------------------------
 
-The project is broken into 3 main parts,  Firstly the shunting yard algorithm, which is used to parse the regular expression into 
-the stack and postfix notations so that it may be read.  Secondly Thompson's Construction is used to convert the post fix notations into 
-non deterministic finite automata.  Finally the "checker" and "match" classes are used to compare these NFA with a set of pre-set text strings.
+The project is broken into 3 main parts,  <br/>Firstly the shunting yard algorithm, which is used to parse the regular expression into 
+the stack and postfix notations so that it may be read. <br/>Secondly Thompson's Construction is used to convert the post fix notations into 
+non deterministic finite automata.  <br/>Finally the "checker" and "match" classes are used to compare these NFA with a set of pre-set text strings.
 
 --------------------------------------------
 References
