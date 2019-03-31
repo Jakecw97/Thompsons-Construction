@@ -15,6 +15,7 @@ How to Run
 3)Open a command prompt (Windows key + type "CMD").   
 4)Navigate to the download folder e.g"cd Desktop".   
 5)Once at the download folder type: "python ThompsonsConstruction.py".   
+
 References
 --------------------------------------------
 1)Dr Ian Mcloughlin's lecture notes & videos  
